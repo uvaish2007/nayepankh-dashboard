@@ -1,0 +1,2265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NayePankh Foundation — Impact Analytics</title>
+<meta name="description" content="NayePankh Foundation Impact Analytics Dashboard - Track scholarships, volunteers, programs and donations across India">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*,*::before,*::after{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  transition: background-color 0.25s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.25s cubic-bezier(0.4, 0, 0.2, 1), color 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+:root{
+  --ink:#F8FAFB;
+  --ink2:#FFFFFF;
+  --ink3:#F1F5F9;
+  --teal:#0D9488;
+  --teal-light:#0F766E;
+  --teal-dim:rgba(13,148,136,0.08);
+  --teal-dim2:rgba(13,148,136,0.04);
+  --saffron:#D97706;
+  --saffron-dim:rgba(217,119,6,0.08);
+  --rose:#E11D48;
+  --rose-dim:rgba(225,29,72,0.07);
+  --sky:#0284C7;
+  --sky-dim:rgba(2,132,199,0.07);
+  --violet:#7C3AED;
+  --violet-dim:rgba(124,58,237,0.07);
+  --emerald:#059669;
+  --emerald-dim:rgba(5,150,105,0.07);
+  --border:rgba(0,0,0,0.06);
+  --border2:rgba(0,0,0,0.10);
+  --text-primary:#1E293B;
+  --text-secondary:#475569;
+  --text-muted:#94A3B8;
+  --sidebar-w:240px;
+  --topbar-h:58px;
+  --shadow-sm:0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md:0 4px 12px rgba(0,0,0,0.06);
+  --shadow-lg:0 8px 24px rgba(0,0,0,0.08);
+  font-family:'Plus Jakarta Sans','Inter',-apple-system,sans-serif;
+  font-size:14px;
+  color:var(--text-primary);
+  background:var(--ink);
+}
+
+[data-theme="dark"] {
+  --ink: #0F172A;
+  --ink2: #1E293B;
+  --ink3: #334155;
+  --border: rgba(255, 255, 255, 0.08);
+  --border2: rgba(255, 255, 255, 0.16);
+  --text-primary: #F8FAFC;
+  --text-secondary: #E2E8F0;
+  --text-muted: #94A3B8;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.5);
+  
+  --teal-dim: rgba(20, 184, 166, 0.15);
+  --saffron-dim: rgba(245, 158, 11, 0.15);
+  --rose-dim: rgba(244, 63, 94, 0.15);
+  --sky-dim: rgba(56, 189, 248, 0.15);
+  --violet-dim: rgba(139, 92, 246, 0.15);
+  --emerald-dim: rgba(16, 185, 129, 0.15);
+}
+
+body{display:flex;height:100vh;overflow:hidden;background:var(--ink)}
+.sidebar{
+  width:var(--sidebar-w);flex-shrink:0;
+  background:var(--ink2);
+  border-right:1px solid var(--border);
+  box-shadow:2px 0 8px rgba(0,0,0,0.03);
+  display:flex;flex-direction:column;
+  position:relative;z-index:20
+}
+.main{flex:1;display:flex;flex-direction:column;min-width:0;overflow:hidden}
+
+/* TOPBAR */
+.topbar{
+  height:var(--topbar-h);flex-shrink:0;
+  background:var(--ink2);
+  border-bottom:1px solid var(--border);
+  box-shadow:var(--shadow-sm);
+  display:flex;align-items:center;
+  padding:0 28px;gap:14px
+}
+.topbar-title{
+  font-family:'Outfit',sans-serif;
+  font-size:16px;font-weight:600;color:var(--text-primary);letter-spacing:-.01em
+}
+.topbar-dot{width:6px;height:6px;border-radius:50%;background:linear-gradient(135deg,var(--teal),#0EA5E9)}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.tb-btn{
+  display:flex;align-items:center;gap:6px;
+  padding:6px 14px;border-radius:8px;font-size:12px;font-weight:600;
+  border:1px solid var(--border2);background:var(--ink2);
+  color:var(--text-secondary);cursor:pointer;transition:all .2s;
+  box-shadow:var(--shadow-sm)
+}
+.tb-btn:hover{background:var(--ink3);color:var(--text-primary);border-color:rgba(0,0,0,.15);transform:translateY(-1px);box-shadow:var(--shadow-md)}
+.tb-btn.primary{background:linear-gradient(135deg,#0D9488,#0EA5E9);color:#fff;border:none;box-shadow:0 2px 8px rgba(13,148,136,.25)}
+.tb-btn.primary:hover{box-shadow:0 4px 14px rgba(13,148,136,.35);transform:translateY(-1px)}
+.tb-period{
+  display:flex;background:var(--ink3);border:1px solid var(--border);border-radius:8px;overflow:hidden
+}
+.period-opt{
+  padding:6px 12px;font-size:11px;font-weight:600;cursor:pointer;
+  color:var(--text-muted);transition:all .15s
+}
+.period-opt:hover{color:var(--text-secondary);background:rgba(0,0,0,.03)}
+.period-opt.active{background:linear-gradient(135deg,#0D9488,#0EA5E9);color:#fff;box-shadow:0 1px 4px rgba(13,148,136,.2)}
+
+/* SIDEBAR */
+.sidebar-brand{
+  height:var(--topbar-h);
+  display:flex;align-items:center;gap:10px;
+  padding:0 18px;border-bottom:1px solid var(--border)
+}
+.brand-wing{
+  width:36px;height:36px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,rgba(13,148,136,.1),rgba(14,165,233,.1));
+  border-radius:10px
+}
+.brand-text{flex:1}
+.brand-name{
+  font-family:'Outfit',sans-serif;
+  font-size:15px;font-weight:700;color:var(--text-primary);line-height:1.1;
+  letter-spacing:-.02em
+}
+.brand-tagline{font-size:10px;color:var(--text-muted);margin-top:2px;font-weight:500}
+
+.nav{flex:1;padding:12px 8px;display:flex;flex-direction:column;gap:2px}
+.nav-group-label{
+  font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--text-muted);padding:12px 10px 6px;font-family:'Outfit',sans-serif
+}
+.nav-item{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 12px;border-radius:8px;cursor:pointer;
+  transition:all .15s;white-space:nowrap;font-weight:500
+}
+.nav-item:hover{background:var(--ink3);transform:translateX(2px)}
+.nav-item.active{background:linear-gradient(135deg,rgba(13,148,136,.1),rgba(14,165,233,.08));box-shadow:inset 3px 0 0 var(--teal)}
+.nav-item.active .nav-icon{color:var(--teal)}
+.nav-item.active .nav-lbl{color:var(--teal-light);font-weight:600}
+.nav-icon{font-size:15px;color:var(--text-muted);width:18px;text-align:center}
+.nav-lbl{font-size:13px;color:var(--text-secondary)}
+.nav-badge{
+  margin-left:auto;font-size:9px;font-weight:700;
+  padding:2px 7px;border-radius:10px;
+  background:linear-gradient(135deg,rgba(13,148,136,.12),rgba(14,165,233,.1));color:var(--teal)
+}
+
+.sidebar-footer{
+  padding:14px 10px;border-top:1px solid var(--border);
+  display:flex;flex-direction:column;gap:6px
+}
+.report-btn{
+  display:flex;align-items:center;gap:8px;padding:10px 12px;
+  border-radius:8px;border:1px dashed rgba(13,148,136,.3);
+  cursor:pointer;transition:all .2s;background:rgba(13,148,136,.03)
+}
+.report-btn:hover{background:var(--teal-dim);border-style:solid;border-color:rgba(13,148,136,.4);transform:translateY(-1px);box-shadow:var(--shadow-sm)}
+.report-icon{font-size:15px}
+.report-text{font-size:12px;font-weight:600;color:var(--teal)}
+.report-sub{font-size:10px;color:var(--text-muted)}
+
+/* CONTENT */
+.content{flex:1;overflow-y:auto;padding:24px 28px;background:var(--ink)}
+.content::-webkit-scrollbar{width:4px}
+.content::-webkit-scrollbar-thumb{background:rgba(0,0,0,.12);border-radius:4px}
+.content::-webkit-scrollbar-track{background:transparent}
+
+/* IMPACT COUNTER STRIP — signature element */
+.impact-strip{
+  display:flex;align-items:stretch;
+  background:var(--ink2);border:1px solid var(--border);border-radius:14px;
+  overflow:hidden;margin-bottom:22px;position:relative;
+  box-shadow:var(--shadow-md)
+}
+.impact-strip::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,#0D9488 0%,#0EA5E9 33%,#D97706 66%,#7C3AED 100%)
+}
+.impact-cell{
+  flex:1;padding:18px 22px;
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;gap:4px;
+  transition:background .15s
+}
+.impact-cell:hover{background:var(--ink3)}
+.impact-cell:last-child{border-right:none}
+.impact-eyebrow{
+  font-size:9px;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--text-muted);font-family:'Outfit',sans-serif
+}
+.impact-number{
+  font-size:30px;font-weight:700;letter-spacing:-.04em;
+  font-variant-numeric:tabular-nums;line-height:1;font-family:'Outfit',sans-serif
+}
+.impact-sub{font-size:11px;color:var(--text-secondary);margin-top:2px}
+.impact-delta{
+  display:inline-flex;align-items:center;gap:3px;
+  font-size:10px;font-weight:600;margin-top:4px
+}
+.delta-up{color:var(--emerald)}
+.delta-down{color:var(--rose)}
+.delta-pip{width:4px;height:4px;border-radius:50%}
+
+/* GRID LAYOUTS */
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:16px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
+.grid-2-1{display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-bottom:16px}
+.grid-1-2{display:grid;grid-template-columns:1fr 2fr;gap:14px;margin-bottom:16px}
+
+/* CARD */
+.card{
+  background:var(--ink2);
+  border:1px solid var(--border);border-radius:12px;overflow:hidden;
+  box-shadow:var(--shadow-sm);transition:box-shadow .2s,transform .2s
+}
+.card:hover{box-shadow:var(--shadow-md)}
+.card-head{
+  display:flex;align-items:flex-start;justify-content:space-between;
+  padding:16px 18px 14px;border-bottom:1px solid var(--border)
+}
+.card-title-wrap{}
+.card-title{font-size:14px;font-weight:700;color:var(--text-primary);letter-spacing:-.01em;font-family:'Outfit',sans-serif}
+.card-sub{font-size:11px;color:var(--text-muted);margin-top:2px}
+.card-action{
+  font-size:11px;font-weight:600;color:var(--text-muted);padding:4px 10px;border-radius:6px;
+  border:1px solid var(--border);cursor:pointer;transition:all .15s;white-space:nowrap;margin-left:8px
+}
+.card-action:hover{color:var(--teal);border-color:rgba(13,148,136,.3);background:var(--teal-dim)}
+.card-body{padding:16px}
+
+/* CHART WRAPPERS */
+.chart-wrap{padding:0 16px 16px;position:relative}
+
+/* MINI STAT CARDS */
+.mini-stats{display:flex;gap:10px;padding:0 18px 16px;flex-wrap:wrap}
+.mini-stat{
+  flex:1;min-width:100px;background:var(--ink3);
+  border-radius:8px;border:1px solid var(--border);padding:12px 14px;
+  transition:transform .15s,box-shadow .15s
+}
+.mini-stat:hover{transform:translateY(-1px);box-shadow:var(--shadow-sm)}
+.ms-label{font-size:9px;color:var(--text-muted);font-weight:700;text-transform:uppercase;letter-spacing:.08em;font-family:'Outfit',sans-serif}
+.ms-val{font-size:18px;font-weight:700;letter-spacing:-.03em;font-variant-numeric:tabular-nums;margin-top:3px;font-family:'Outfit',sans-serif}
+.ms-change{font-size:10px;margin-top:3px;font-weight:600}
+
+/* PROGRAM TABLE */
+.prog-table{width:100%;border-collapse:collapse;font-size:12px}
+.prog-table th{
+  padding:8px 16px;text-align:left;font-size:9px;font-weight:700;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);
+  border-bottom:1px solid var(--border);font-family:'Outfit',sans-serif;
+  background:var(--ink3)
+}
+.prog-table td{padding:10px 16px;border-bottom:1px solid var(--border);vertical-align:middle}
+.prog-table tr:last-child td{border-bottom:none}
+.prog-table tr:hover td{background:rgba(13,148,136,.03)}
+.prog-name{font-weight:600;color:var(--text-primary);font-size:13px}
+.prog-loc{font-size:10px;color:var(--text-muted);margin-top:1px}
+.prog-bar-bg{height:4px;border-radius:3px;background:var(--ink3);width:100px;display:inline-block}
+.prog-bar-fill{height:4px;border-radius:3px;display:block;transition:width .8s cubic-bezier(.4,0,.2,1)}
+.status-pill{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:9.5px;font-weight:600;padding:3px 8px;border-radius:10px
+}
+.sp-active{background:var(--teal-dim);color:var(--teal);border:1px solid rgba(13,148,136,.2)}
+.sp-planning{background:var(--saffron-dim);color:var(--saffron);border:1px solid rgba(217,119,6,.2)}
+.sp-completed{background:var(--emerald-dim);color:var(--emerald);border:1px solid rgba(5,150,105,.2)}
+
+/* GEO INDIA MAP placeholder with state dots */
+.india-wrap{position:relative;padding:12px 16px 16px}
+.india-svg{width:100%;max-height:260px}
+.state-dot{cursor:pointer;transition:r .15s}
+.state-dot:hover{r:6}
+
+/* VOLUNTEER LIST */
+.vol-list{display:flex;flex-direction:column}
+.vol-item{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 16px;border-bottom:1px solid var(--border);
+  transition:all .15s;cursor:pointer
+}
+.vol-item:last-child{border-bottom:none}
+.vol-item:hover{background:rgba(13,148,136,.03);transform:translateX(2px)}
+.vol-avatar{
+  width:32px;height:32px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;font-family:'Outfit',sans-serif
+}
+.vol-name{font-size:13px;font-weight:600;color:var(--text-primary)}
+.vol-city{font-size:10px;color:var(--text-muted)}
+.vol-hours{font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--text-secondary);margin-left:auto;font-family:'Outfit',sans-serif}
+.vol-rank{
+  width:20px;height:20px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:9px;font-weight:700
+}
+
+/* TREND INSIGHT ROW */
+.insight-row{
+  display:flex;align-items:flex-start;gap:12px;padding:12px 16px;
+  border-radius:10px;background:var(--ink2);border:1px solid var(--border);
+  margin-bottom:8px;box-shadow:var(--shadow-sm);transition:all .15s
+}
+.insight-row:hover{box-shadow:var(--shadow-md);transform:translateY(-1px)}
+.insight-row:last-child{margin-bottom:0}
+.insight-icon{font-size:16px;flex-shrink:0;margin-top:1px}
+.insight-text{font-size:12px;color:var(--text-secondary);line-height:1.6}
+.insight-text strong{color:var(--text-primary);font-weight:700}
+.insight-badge{
+  margin-left:auto;flex-shrink:0;
+  font-size:9px;font-weight:700;padding:3px 8px;border-radius:10px;font-family:'Outfit',sans-serif
+}
+
+/* SECTION LABEL */
+.section-label{
+  font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--text-muted);margin-bottom:12px;display:flex;align-items:center;gap:10px;
+  font-family:'Outfit',sans-serif
+}
+.section-label::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--border),transparent)}
+
+/* DONUT LEGEND */
+.donut-legend{display:flex;flex-direction:column;gap:8px;padding:0 16px 16px}
+.dl-row{display:flex;align-items:center;gap:8px;padding:4px 6px;border-radius:6px;transition:background .1s}
+.dl-row:hover{background:var(--ink3)}
+.dl-dot{width:8px;height:8px;border-radius:3px;flex-shrink:0}
+.dl-name{font-size:12px;color:var(--text-secondary);flex:1}
+.dl-pct{font-size:12px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--text-primary);font-family:'Outfit',sans-serif}
+.dl-count{font-size:10px;color:var(--text-muted)}
+
+/* SCROLL AREA */
+.scroll-area{overflow-x:auto}
+.scroll-area::-webkit-scrollbar{height:2px}
+.scroll-area::-webkit-scrollbar-thumb{background:var(--border2)}
+
+/* PAGE HEADER */
+.page-head{margin-bottom:18px;display:flex;align-items:flex-end;justify-content:space-between}
+.page-hed-title{
+  font-family:'Outfit',sans-serif;
+  font-size:24px;font-weight:700;color:var(--text-primary);letter-spacing:-.02em;line-height:1
+}
+.page-hed-sub{font-size:12px;color:var(--text-muted);margin-top:5px;font-weight:500}
+.live-tag{
+  display:flex;align-items:center;gap:6px;
+  font-size:10px;font-weight:700;color:var(--teal);
+  background:var(--teal-dim);border:1px solid rgba(13,148,136,.15);
+  padding:5px 12px;border-radius:20px;font-family:'Outfit',sans-serif
+}
+.live-pulse{width:6px;height:6px;border-radius:50%;background:var(--teal);animation:lp 2s infinite;box-shadow:0 0 6px rgba(13,148,136,.4)}
+@keyframes lp{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
+
+@media(max-width:1100px){
+  .grid-3{grid-template-columns:1fr 1fr}
+  .grid-2-1{grid-template-columns:1fr}
+  .grid-1-2{grid-template-columns:1fr}
+}
+@media(max-width:800px){
+  .sidebar{display:none}
+  .grid-3{grid-template-columns:1fr}
+  .grid-2{grid-template-columns:1fr}
+}
+
+/* INTERACTIVE & MULTI-VIEW STYLES */
+.dashboard-view {
+  display: none;
+}
+.dashboard-view.active-view {
+  display: block;
+  animation: fadeIn 0.4s ease-out;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* SEARCH & FILTER CONTROLS */
+.filter-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--ink2);
+  border: 1px solid var(--border);
+  padding: 12px 18px;
+  border-radius: 12px;
+  margin-bottom: 18px;
+  box-shadow: var(--shadow-sm);
+}
+.search-input-wrapper {
+  position: relative;
+  flex: 1;
+  max-width: 320px;
+}
+.search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  font-size: 13px;
+}
+.search-field {
+  width: 100%;
+  padding: 8px 12px 8px 34px;
+  border-radius: 8px;
+  border: 1px solid var(--border2);
+  background: var(--ink);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+.search-field:focus {
+  outline: none;
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px var(--teal-dim);
+}
+.filter-select {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border2);
+  background: var(--ink2);
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.filter-select:focus {
+  outline: none;
+  border-color: var(--teal);
+}
+
+/* FORMS & INPUTS */
+.interactive-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.form-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.form-control {
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border2);
+  background: var(--ink);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+.form-control:focus {
+  outline: none;
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px var(--teal-dim);
+}
+.form-btn {
+  padding: 10px 16px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #0D9488, #0EA5E9);
+  color: white;
+  border: none;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(13,148,136,0.2);
+}
+.form-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(13,148,136,0.3);
+}
+
+/* TIMELINE (IMPACT TRENDS) */
+.timeline-item {
+  position: relative;
+  padding-left: 24px;
+  padding-bottom: 18px;
+  border-left: 2px solid var(--border);
+}
+.timeline-item:last-child {
+  border-left-color: transparent;
+  padding-bottom: 0;
+}
+.timeline-dot {
+  position: absolute;
+  left: -6px;
+  top: 4px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--teal);
+  border: 2px solid var(--ink2);
+}
+.timeline-date {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--teal);
+  margin-bottom: 2px;
+}
+.timeline-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.timeline-desc {
+  font-size: 11.5px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  margin-top: 2px;
+}
+
+/* STATE SELECTOR GRID */
+.state-selector-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 8px;
+  max-height: 280px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+.state-btn {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--ink3);
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+.state-btn:hover {
+  background: var(--border2);
+  color: var(--text-primary);
+}
+.state-btn.active {
+  background: linear-gradient(135deg, rgba(13,148,136,0.1), rgba(14,165,233,0.1));
+  border-color: var(--teal);
+  color: var(--teal-light);
+}
+
+/* DYNAMIC PROJECTION SLIDERS */
+.slider-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--ink3);
+  padding: 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+.slider-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 600;
+}
+.custom-slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--border2);
+  outline: none;
+}
+.custom-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--teal);
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+.custom-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+/* TOAST NOTIFICATION */
+.toast-msg {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: #1E293B;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 10px;
+  box-shadow: var(--shadow-lg);
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 999;
+  transform: translateY(100px);
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.toast-msg.show {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* EXPORT REPORTS VIEW */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.checkbox-card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--ink);
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s;
+}
+.checkbox-card:hover {
+  background: var(--ink3);
+}
+.checkbox-card input {
+  accent-color: var(--teal);
+}
+.checkbox-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.report-progress-container {
+  display: none;
+  background: var(--ink3);
+  padding: 18px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  margin-top: 14px;
+}
+.report-progress-text {
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.report-progress-bar-bg {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--border);
+  overflow: hidden;
+}
+.report-progress-bar-fill {
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, var(--teal), #0EA5E9);
+  transition: width 0.1s linear;
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-wing">
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+        <rect width="32" height="32" rx="8" fill="rgba(13,148,136,0.15)"/>
+        <path d="M16 6 C16 6, 8 12, 8 19 C8 23.4 11.6 27 16 27 C20.4 27 24 23.4 24 19 C24 12, 16 6, 16 6Z" fill="none" stroke="#0D9488" stroke-width="1.5" stroke-linejoin="round"/>
+        <path d="M16 10 C16 10, 21 15, 21 20 C21 22.8 18.8 25 16 25" fill="none" stroke="#F59E0B" stroke-width="1.2" stroke-linecap="round"/>
+        <circle cx="16" cy="6" r="2" fill="#F59E0B"/>
+      </svg>
+    </div>
+    <div class="brand-text">
+      <div class="brand-name">NayePankh</div>
+      <div class="brand-tagline">Foundation · Impact Analytics</div>
+    </div>
+  </div>
+
+  <div class="nav">
+    <div class="nav-group-label">Overview</div>
+    <div class="nav-item active">
+      <span class="nav-icon">◈</span>
+      <span class="nav-lbl">Dashboard</span>
+    </div>
+    <div class="nav-item">
+      <span class="nav-icon">↗</span>
+      <span class="nav-lbl">Impact Trends</span>
+    </div>
+    <div class="nav-item">
+      <span class="nav-icon">⊙</span>
+      <span class="nav-lbl">Beneficiary Map</span>
+      <span class="nav-badge">Live</span>
+    </div>
+
+    <div class="nav-group-label" style="margin-top:8px">Programs</div>
+    <div class="nav-item">
+      <span class="nav-icon">◷</span>
+      <span class="nav-lbl">Scholarship Track</span>
+    </div>
+    <div class="nav-item">
+      <span class="nav-icon">⬡</span>
+      <span class="nav-lbl">Mentorship</span>
+    </div>
+    <div class="nav-item">
+      <span class="nav-icon">⊞</span>
+      <span class="nav-lbl">Skill Camps</span>
+    </div>
+    <div class="nav-item">
+      <span class="nav-icon">◻</span>
+      <span class="nav-lbl">Volunteers</span>
+    </div>
+
+    <div class="nav-group-label" style="margin-top:8px">Data</div>
+    <div class="nav-item">
+      <span class="nav-icon">⬟</span>
+      <span class="nav-lbl">Donor Analytics</span>
+    </div>
+    <div class="nav-item">
+      <span class="nav-icon">⚙</span>
+      <span class="nav-lbl">Export & Reports</span>
+    </div>
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="report-btn" id="reportBtn">
+      <div class="report-icon">📄</div>
+      <div>
+        <div class="report-text">Generate Report</div>
+        <div class="report-sub">PDF · Monthly summary</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-dot"></div>
+    <span class="topbar-title">NayePankh Foundation — Impact Analytics</span>
+    <div class="topbar-right">
+      <div class="tb-period">
+        <div class="period-opt" onclick="setPeriod(this,'Q1')">Q1</div>
+        <div class="period-opt" onclick="setPeriod(this,'Q2')">Q2</div>
+        <div class="period-opt active" onclick="setPeriod(this,'YTD')">YTD</div>
+        <div class="period-opt" onclick="setPeriod(this,'All')">All</div>
+      </div>
+      <div class="tb-btn">↓ Export</div>
+      <div class="tb-btn primary">+ Add Record</div>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <div class="page-head">
+      <div>
+        <div class="page-hed-title">Impact Overview</div>
+        <div class="page-hed-sub">Year-to-date · Jan–Jun 2025 · All Programs · India</div>
+      </div>
+      <div class="live-tag"><div class="live-pulse"></div> Live data</div>
+    </div>
+
+    <!-- VIEW: DASHBOARD -->
+    <div id="view-dashboard" class="dashboard-view active-view">
+    <!-- IMPACT COUNTER STRIP -->
+    <div class="impact-strip">
+      <div class="impact-cell">
+        <div class="impact-eyebrow">Students reached</div>
+        <div class="impact-number" style="color:var(--teal-light)" id="cnt-students">0</div>
+        <div class="impact-sub">across 12 states</div>
+        <div class="impact-delta delta-up"><div class="delta-pip" style="background:var(--emerald)"></div>↑ 23% vs last year</div>
+      </div>
+      <div class="impact-cell">
+        <div class="impact-eyebrow">Scholarships awarded</div>
+        <div class="impact-number" style="color:var(--saffron)" id="cnt-scholarships">0</div>
+        <div class="impact-sub">₹1.2 Cr total disbursed</div>
+        <div class="impact-delta delta-up"><div class="delta-pip" style="background:var(--emerald)"></div>↑ 41% vs last year</div>
+      </div>
+      <div class="impact-cell">
+        <div class="impact-eyebrow">Volunteers active</div>
+        <div class="impact-number" style="color:var(--sky)" id="cnt-volunteers">0</div>
+        <div class="impact-sub">8,340 hours logged</div>
+        <div class="impact-delta delta-up"><div class="delta-pip" style="background:var(--emerald)"></div>↑ 18% vs last year</div>
+      </div>
+      <div class="impact-cell">
+        <div class="impact-eyebrow">Programs active</div>
+        <div class="impact-number" style="color:var(--violet)" id="cnt-programs">0</div>
+        <div class="impact-sub">across 6 domains</div>
+        <div class="impact-delta delta-up"><div class="delta-pip" style="background:var(--emerald)"></div>↑ 3 new this quarter</div>
+      </div>
+      <div class="impact-cell">
+        <div class="impact-eyebrow">Placement rate</div>
+        <div class="impact-number" style="color:var(--emerald)" id="cnt-placement">0</div>
+        <div class="impact-sub">of scholarship alumni</div>
+        <div class="impact-delta delta-up"><div class="delta-pip" style="background:var(--emerald)"></div>↑ 7pp vs last year</div>
+      </div>
+    </div>
+
+    <!-- REACH TREND + PROGRAM BREAKDOWN -->
+    <div class="grid-2-1">
+      <!-- REACH CHART -->
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title-wrap">
+            <div class="card-title">Monthly student reach</div>
+            <div class="card-sub">New beneficiaries enrolled per month · YTD</div>
+          </div>
+          <div class="card-action">Cohorts ▾</div>
+        </div>
+        <div class="mini-stats">
+          <div class="mini-stat">
+            <div class="ms-label">Peak month</div>
+            <div class="ms-val" style="color:var(--teal-light)">Mar</div>
+            <div class="ms-change" style="color:var(--emerald)">↑ 4,200 enrolled</div>
+          </div>
+          <div class="mini-stat">
+            <div class="ms-label">Avg / month</div>
+            <div class="ms-val" style="color:var(--text-primary)">2,840</div>
+            <div class="ms-change" style="color:var(--text-muted)">↑ vs 2,310 LY</div>
+          </div>
+          <div class="mini-stat">
+            <div class="ms-label">Jun projection</div>
+            <div class="ms-val" style="color:var(--saffron)">3,100</div>
+            <div class="ms-change" style="color:var(--saffron)">On track ↗</div>
+          </div>
+        </div>
+        <div class="chart-wrap" style="height:180px">
+          <canvas id="reachChart" role="img" aria-label="Bar chart of monthly student reach Jan to Jun 2025, peaking in March at 4200">Monthly reach: Jan 2100, Feb 2500, Mar 4200, Apr 3100, May 3400, Jun 2200.</canvas>
+        </div>
+      </div>
+
+      <!-- PROGRAM DONUT -->
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title-wrap">
+            <div class="card-title">Students by program</div>
+            <div class="card-sub">Distribution across 6 programs</div>
+          </div>
+        </div>
+        <div style="padding:12px 16px 0;display:flex;justify-content:center">
+          <div style="position:relative;width:130px;height:130px">
+            <canvas id="donutChart" role="img" aria-label="Donut chart showing student distribution: Scholarship 38%, Skill Camps 24%, Mentorship 18%, Digital Literacy 11%, Health Awareness 6%, Other 3%">Scholarship 38%, Skill Camps 24%, Mentorship 18%, Digital Literacy 11%, Health 6%, Other 3%.</canvas>
+          </div>
+        </div>
+        <div class="donut-legend" style="margin-top:10px">
+          <div class="dl-row"><div class="dl-dot" style="background:#0D9488"></div><span class="dl-name">Scholarship</span><span class="dl-count">6,460</span><span class="dl-pct">38%</span></div>
+          <div class="dl-row"><div class="dl-dot" style="background:#F59E0B"></div><span class="dl-name">Skill Camps</span><span class="dl-count">4,080</span><span class="dl-pct">24%</span></div>
+          <div class="dl-row"><div class="dl-dot" style="background:#38BDF8"></div><span class="dl-name">Mentorship</span><span class="dl-count">3,060</span><span class="dl-pct">18%</span></div>
+          <div class="dl-row"><div class="dl-dot" style="background:#8B5CF6"></div><span class="dl-name">Digital Literacy</span><span class="dl-count">1,870</span><span class="dl-pct">11%</span></div>
+          <div class="dl-row"><div class="dl-dot" style="background:#F43F5E"></div><span class="dl-name">Health Awareness</span><span class="dl-count">1,020</span><span class="dl-pct">6%</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STATE + VOLUNTEER SECTION -->
+    <div class="grid-1-2">
+      <!-- TOP VOLUNTEERS -->
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title-wrap">
+            <div class="card-title">Top volunteers</div>
+            <div class="card-sub">By hours logged · YTD</div>
+          </div>
+          <div class="card-action">All 340 →</div>
+        </div>
+        <div class="vol-list">
+          <div class="vol-item">
+            <div class="vol-rank" style="background:rgba(217,119,6,.12);color:var(--saffron)">1</div>
+            <div class="vol-avatar" style="background:rgba(13,148,136,.1);color:var(--teal)">AM</div>
+            <div><div class="vol-name">Ananya Mehta</div><div class="vol-city">Mumbai · Scholarship coord.</div></div>
+            <div class="vol-hours">214 hr</div>
+          </div>
+          <div class="vol-item">
+            <div class="vol-rank" style="background:rgba(0,0,0,.05);color:var(--text-muted)">2</div>
+            <div class="vol-avatar" style="background:rgba(2,132,199,.1);color:var(--sky)">RK</div>
+            <div><div class="vol-name">Rahul Kumar</div><div class="vol-city">Delhi · Digital literacy</div></div>
+            <div class="vol-hours">198 hr</div>
+          </div>
+          <div class="vol-item">
+            <div class="vol-rank" style="background:rgba(0,0,0,.05);color:var(--text-muted)">3</div>
+            <div class="vol-avatar" style="background:rgba(124,58,237,.1);color:var(--violet)">PS</div>
+            <div><div class="vol-name">Priya Sharma</div><div class="vol-city">Pune · Skill camps</div></div>
+            <div class="vol-hours">176 hr</div>
+          </div>
+          <div class="vol-item">
+            <div class="vol-rank" style="background:rgba(0,0,0,.05);color:var(--text-muted)">4</div>
+            <div class="vol-avatar" style="background:rgba(225,29,72,.08);color:var(--rose)">TN</div>
+            <div><div class="vol-name">Tarun Nair</div><div class="vol-city">Chennai · Mentorship</div></div>
+            <div class="vol-hours">162 hr</div>
+          </div>
+          <div class="vol-item">
+            <div class="vol-rank" style="background:rgba(0,0,0,.05);color:var(--text-muted)">5</div>
+            <div class="vol-avatar" style="background:rgba(5,150,105,.1);color:var(--emerald)">SD</div>
+            <div><div class="vol-name">Sneha Desai</div><div class="vol-city">Ahmedabad · Health</div></div>
+            <div class="vol-hours">149 hr</div>
+          </div>
+          <div class="vol-item">
+            <div class="vol-rank" style="background:rgba(0,0,0,.05);color:var(--text-muted)">6</div>
+            <div class="vol-avatar" style="background:rgba(217,119,6,.1);color:var(--saffron)">VR</div>
+            <div><div class="vol-name">Vikram Rao</div><div class="vol-city">Bengaluru · Scholarship</div></div>
+            <div class="vol-hours">143 hr</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DONOR TREND + PROGRAM TABLE -->
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <!-- DONOR TREND -->
+        <div class="card">
+          <div class="card-head">
+            <div class="card-title-wrap">
+              <div class="card-title">Donation inflow</div>
+              <div class="card-sub">₹ lakhs · monthly trend</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px">
+              <div style="font-size:18px;font-weight:700;color:var(--emerald);font-variant-numeric:tabular-nums;font-family:'Outfit',sans-serif">₹1.2 Cr</div>
+              <div style="font-size:10px;color:var(--emerald)">↑ 31%</div>
+            </div>
+          </div>
+          <div class="chart-wrap" style="height:110px">
+            <canvas id="donorChart" role="img" aria-label="Line chart of monthly donations in lakhs from Jan to Jun 2025">Donations: Jan 12, Feb 15, Mar 22, Apr 18, May 24, Jun 29 lakhs.</canvas>
+          </div>
+        </div>
+
+        <!-- ACTIVE PROGRAMS TABLE -->
+        <div class="card">
+          <div class="card-head">
+            <div class="card-title-wrap">
+              <div class="card-title">Active programs</div>
+              <div class="card-sub">Enrollment vs target</div>
+            </div>
+          </div>
+          <div class="scroll-area">
+            <table class="prog-table">
+              <thead>
+                <tr>
+                  <th>Program</th>
+                  <th>State</th>
+                  <th>Progress</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><div class="prog-name">Udaan Scholarship</div><div class="prog-loc">Merit + income-based</div></td>
+                  <td style="color:var(--text-secondary);font-size:11px">UP, Bihar, MP</td>
+                  <td>
+                    <div style="display:flex;align-items:center;gap:6px">
+                      <span class="prog-bar-bg"><span class="prog-bar-fill" style="width:86%;background:var(--teal)"></span></span>
+                      <span style="font-size:11px;color:var(--text-secondary);font-variant-numeric:tabular-nums">86%</span>
+                    </div>
+                  </td>
+                  <td><span class="status-pill sp-active">● Active</span></td>
+                </tr>
+                <tr>
+                  <td><div class="prog-name">TechShiksha Camps</div><div class="prog-loc">Digital skills for youth</div></td>
+                  <td style="color:var(--text-secondary);font-size:11px">MH, GJ, KA</td>
+                  <td>
+                    <div style="display:flex;align-items:center;gap:6px">
+                      <span class="prog-bar-bg"><span class="prog-bar-fill" style="width:72%;background:var(--saffron)"></span></span>
+                      <span style="font-size:11px;color:var(--text-secondary);font-variant-numeric:tabular-nums">72%</span>
+                    </div>
+                  </td>
+                  <td><span class="status-pill sp-active">● Active</span></td>
+                </tr>
+                <tr>
+                  <td><div class="prog-name">Nari Shiksha</div><div class="prog-loc">Girls' education push</div></td>
+                  <td style="color:var(--text-secondary);font-size:11px">RJ, HR, PB</td>
+                  <td>
+                    <div style="display:flex;align-items:center;gap:6px">
+                      <span class="prog-bar-bg"><span class="prog-bar-fill" style="width:61%;background:var(--violet)"></span></span>
+                      <span style="font-size:11px;color:var(--text-secondary);font-variant-numeric:tabular-nums">61%</span>
+                    </div>
+                  </td>
+                  <td><span class="status-pill sp-planning">◌ Planning</span></td>
+                </tr>
+                <tr>
+                  <td><div class="prog-name">Health Chetna</div><div class="prog-loc">Wellness & hygiene</div></td>
+                  <td style="color:var(--text-secondary);font-size:11px">WB, OD, TN</td>
+                  <td>
+                    <div style="display:flex;align-items:center;gap:6px">
+                      <span class="prog-bar-bg"><span class="prog-bar-fill" style="width:100%;background:var(--emerald)"></span></span>
+                      <span style="font-size:11px;color:var(--text-secondary);font-variant-numeric:tabular-nums">100%</span>
+                    </div>
+                  </td>
+                  <td><span class="status-pill sp-completed">✓ Completed</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TREND INSIGHTS -->
+    <div class="section-label">Automated insights · AI-generated · Jun 14, 2025</div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px">
+      <div class="insight-row">
+        <div class="insight-icon">📈</div>
+        <div class="insight-text"><strong>Scholarship enrollments surged 41% YoY</strong> — driven by expansion into 3 new districts in Uttar Pradesh following the state govt. partnership signed in February 2025.</div>
+        <div class="insight-badge" style="background:var(--teal-dim);color:var(--teal-light);border:1px solid rgba(13,148,136,.25)">Growth</div>
+      </div>
+      <div class="insight-row">
+        <div class="insight-icon">⚠️</div>
+        <div class="insight-text"><strong>Nari Shiksha program is 39% behind enrollment target</strong> for Q2. Ground teams cite monsoon disruption in Rajasthan. Recommend shifting 2 camp dates to August.</div>
+        <div class="insight-badge" style="background:var(--saffron-dim);color:var(--saffron);border:1px solid rgba(245,158,11,.25)">Alert</div>
+      </div>
+      <div class="insight-row">
+        <div class="insight-icon">💡</div>
+        <div class="insight-text"><strong>Donation inflow shows strong correlation with social media campaigns</strong> — the March spike (₹22L) coincided with the <em>#NayePankh2025</em> Twitter campaign. Replicating in June could push donations past ₹35L.</div>
+        <div class="insight-badge" style="background:var(--violet-dim);color:var(--violet);border:1px solid rgba(139,92,246,.25)">Opportunity</div>
+      </div>
+      <div class="insight-row">
+        <div class="insight-icon">🎓</div>
+        <div class="insight-text"><strong>78% placement rate</strong> among 2024 scholarship cohort — up 7 percentage points. Engineering & technical programs show highest absorption at 89%, vs 63% for arts cohorts.</div>
+        <div class="insight-badge" style="background:var(--emerald-dim);color:var(--emerald);border:1px solid rgba(16,185,129,.25)">Win</div>
+      </div>
+    </div>
+
+    <!-- GENDER + STATE BREAKDOWN -->
+    <div class="grid-2" style="margin-bottom:0">
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title-wrap">
+            <div class="card-title">Gender distribution</div>
+            <div class="card-sub">Across all programs · YTD</div>
+          </div>
+        </div>
+        <div class="chart-wrap" style="height:160px">
+          <canvas id="genderChart" role="img" aria-label="Horizontal bar chart: Female 54%, Male 43%, Non-binary or undisclosed 3%">Female 54%, Male 43%, Other 3%.</canvas>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title-wrap">
+            <div class="card-title">Top states by reach</div>
+            <div class="card-sub">Student count · 2025</div>
+          </div>
+        </div>
+        <div class="chart-wrap" style="height:160px">
+          <canvas id="stateChart" role="img" aria-label="Horizontal bar chart showing top states: UP 4200, Bihar 3100, Maharashtra 2800, Rajasthan 2400, Karnataka 1900">UP 4200, Bihar 3100, MH 2800, RJ 2400, KA 1900.</canvas>
+        </div>
+      </div>
+    </div>
+
+    </div> <!-- END VIEW: DASHBOARD -->
+
+    <!-- VIEW: IMPACT TRENDS -->
+    <div id="view-impact-trends" class="dashboard-view">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-head">
+            <div class="card-title">Quarterly Reach Progress</div>
+            <div class="card-sub">Growth comparison by quarters</div>
+          </div>
+          <div class="card-body">
+            <table class="prog-table">
+              <thead>
+                <tr><th>Quarter</th><th>Students Reached</th><th>Growth Rate</th><th>Disbursed Funding</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><strong>Q1 2025</strong></td><td>8,450</td><td><span style="color:var(--emerald); font-weight:700;">↑ 12%</span></td><td>₹45 Lakhs</td></tr>
+                <tr><td><strong>Q2 2025</strong></td><td>11,200</td><td><span style="color:var(--emerald); font-weight:700;">↑ 32%</span></td><td>₹75 Lakhs</td></tr>
+                <tr><td><strong>Q3 2025 (Est)</strong></td><td>14,500</td><td><span style="color:var(--emerald); font-weight:700;">↑ 29%</span></td><td>₹90 Lakhs</td></tr>
+                <tr><td><strong>Q4 2025 (Est)</strong></td><td>18,000</td><td><span style="color:var(--emerald); font-weight:700;">↑ 24%</span></td><td>₹1.1 Cr</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head">
+            <div class="card-title">Interactive Impact Forecaster</div>
+            <div class="card-sub">Slide to simulate students reached based on funding allocation</div>
+          </div>
+          <div class="card-body" style="display:flex; flex-direction:column; gap:16px;">
+            <div class="slider-container">
+              <div class="slider-header">
+                <span>Funding (in ₹ Lakhs)</span>
+                <span id="funding-val" style="color:var(--teal); font-weight:700">₹60 Lakhs</span>
+              </div>
+              <input type="range" min="10" max="200" value="60" class="custom-slider" id="funding-slider">
+            </div>
+            <div class="grid-2" style="margin-bottom:0; gap:10px;">
+              <div class="mini-stat" style="margin:0; background:var(--ink3)">
+                <div class="ms-label">Students Impacted</div>
+                <div class="ms-val" id="forecast-students" style="color:var(--teal)">9,000</div>
+              </div>
+              <div class="mini-stat" style="margin:0; background:var(--ink3)">
+                <div class="ms-label">Camps Organized</div>
+                <div class="ms-val" id="forecast-camps" style="color:var(--saffron)">18</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <div class="card-head">
+          <div class="card-title">Foundation Milestones Timeline</div>
+          <div class="card-sub">Key achievements since inception</div>
+        </div>
+        <div class="card-body" style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+          <div class="timeline-container">
+            <div class="timeline-item">
+              <div class="timeline-dot"></div>
+              <div class="timeline-date">FEB 2023</div>
+              <div class="timeline-title">Foundation Registered</div>
+              <div class="timeline-desc">NayePankh Foundation was officially registered to assist children and youth.</div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-dot"></div>
+              <div class="timeline-date">JUN 2023</div>
+              <div class="timeline-title">First 50 Scholarships</div>
+              <div class="timeline-desc">Disbursed the initial merit-cum-means scholarships in Kanpur, UP.</div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-dot"></div>
+              <div class="timeline-date">DEC 2023</div>
+              <div class="timeline-title">Digital Literacy Launch</div>
+              <div class="timeline-desc">Inaugurated our first TechShiksha center with 15 donated laptops.</div>
+            </div>
+          </div>
+          <div class="timeline-container">
+            <div class="timeline-item">
+              <div class="timeline-dot"></div>
+              <div class="timeline-date">MAY 2024</div>
+              <div class="timeline-title">10,000 Students Milestone</div>
+              <div class="timeline-desc">Reached over 10k cumulative beneficiaries across 5 North Indian states.</div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-dot"></div>
+              <div class="timeline-date">JAN 2025</div>
+              <div class="timeline-title">State Partnership</div>
+              <div class="timeline-desc">Signed a joint initiative with the Department of Education to scale outreach.</div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-dot"></div>
+              <div class="timeline-date">JUN 2025</div>
+              <div class="timeline-title">National Footprint</div>
+              <div class="timeline-desc">Extended operations to 12 states with 340 active core volunteers.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div> <!-- END VIEW: IMPACT TRENDS -->
+
+    <!-- VIEW: BENEFICIARY MAP -->
+    <div id="view-beneficiary-map" class="dashboard-view">
+      <div class="grid-2-1">
+        <div class="card">
+          <div class="card-head">
+            <div class="card-title">Outreach Map Interactive</div>
+            <div class="card-sub">Select a state to view local impact data</div>
+          </div>
+          <div class="card-body" style="display:flex; flex-direction:column; align-items:center; gap:16px;">
+            <div class="state-selector-grid" style="width:100%">
+              <button class="state-btn active" onclick="selectState(this, 'Uttar Pradesh', '7,200', '310', '₹42L', 'Anshul Sharma')">Uttar Pradesh</button>
+              <button class="state-btn" onclick="selectState(this, 'Bihar', '3,100', '180', '₹22L', 'Manish Ranjan')">Bihar</button>
+              <button class="state-btn" onclick="selectState(this, 'Maharashtra', '2,800', '142', '₹24L', 'Pooja Patil')">Maharashtra</button>
+              <button class="state-btn" onclick="selectState(this, 'Rajasthan', '2,400', '110', '₹16L', 'Vikram Choudhary')">Rajasthan</button>
+              <button class="state-btn" onclick="selectState(this, 'Karnataka', '1,900', '95', '₹14L', 'Karthik Gowda')">Karnataka</button>
+              <button class="state-btn" onclick="selectState(this, 'Madhya Pradesh', '1,400', '64', '₹8L', 'Neha Tiwari')">Madhya Pradesh</button>
+              <button class="state-btn" onclick="selectState(this, 'Gujarat', '1,100', '50', '₹7L', 'Sanjay Patel')">Gujarat</button>
+              <button class="state-btn" onclick="selectState(this, 'West Bengal', '950', '42', '₹5L', 'Debashree Sen')">West Bengal</button>
+            </div>
+            <div style="font-size:11px; color:var(--text-muted); text-align:center;">*Selecting a state dynamically loads its statistics card and field coordinators.</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head">
+            <div class="card-title">Regional Insights</div>
+            <div class="card-sub" id="region-subtitle">Currently displaying: Uttar Pradesh</div>
+          </div>
+          <div class="card-body" style="display:flex; flex-direction:column; gap:14px;">
+            <div class="mini-stat" style="margin:0; background:var(--ink3)">
+              <div class="ms-label">Total Outreach</div>
+              <div class="ms-val" id="state-outreach" style="color:var(--teal)">7,200 Students</div>
+            </div>
+            <div class="mini-stat" style="margin:0; background:var(--ink3)">
+              <div class="ms-label">Active Scholars</div>
+              <div class="ms-val" id="state-scholars" style="color:var(--saffron)">310 Awardees</div>
+            </div>
+            <div class="mini-stat" style="margin:0; background:var(--ink3)">
+              <div class="ms-label">Funds Disbursed</div>
+              <div class="ms-val" id="state-funds" style="color:var(--emerald)">₹42 Lakhs</div>
+            </div>
+            <div style="border-top: 1px solid var(--border); padding-top:10px;">
+              <div style="font-size:10px; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Regional Coordinator</div>
+              <div style="font-size:13px; font-weight:700; color:var(--text-primary); margin-top:2px;" id="state-coordinator">Anshul Sharma</div>
+              <div style="font-size:11px; color:var(--text-secondary)">anshul.s@nayepankh.org</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div> <!-- END VIEW: BENEFICIARY MAP -->
+
+    <!-- VIEW: SCHOLARSHIP TRACK -->
+    <div id="view-scholarship-track" class="dashboard-view">
+      <div class="filter-bar">
+        <div class="search-input-wrapper">
+          <span class="search-icon">🔍</span>
+          <input type="text" placeholder="Search scholars by name, school, state..." class="search-field" id="scholar-search">
+        </div>
+        <select class="filter-select" id="scholar-filter">
+          <option value="all">All Statuses</option>
+          <option value="active">Active</option>
+          <option value="review">Under Review</option>
+          <option value="completed">Completed</option>
+        </select>
+      </div>
+      <div class="grid-2-1">
+        <div class="card">
+          <div class="card-head">
+            <div class="card-title">Scholar Roster</div>
+            <div class="card-sub">List of scholarship students YTD</div>
+          </div>
+          <div class="scroll-area">
+            <table class="prog-table" id="scholar-table">
+              <thead>
+                <tr><th>Student Name</th><th>School/College</th><th>State</th><th>Status</th></tr>
+              </thead>
+              <tbody>
+                <tr data-status="active">
+                  <td><strong>Aditya Verma</strong><div class="prog-loc">Class 11</div></td>
+                  <td>DAV Public School, Kanpur</td>
+                  <td>Uttar Pradesh</td>
+                  <td><span class="status-pill sp-active">Active</span></td>
+                </tr>
+                <tr data-status="active">
+                  <td><strong>Meera Kumari</strong><div class="prog-loc">Class 12</div></td>
+                  <td>Govt Girls School, Patna</td>
+                  <td>Bihar</td>
+                  <td><span class="status-pill sp-active">Active</span></td>
+                </tr>
+                <tr data-status="review">
+                  <td><strong>Rohan Deshmukh</strong><div class="prog-loc">B.Sc Computer Science</div></td>
+                  <td>Mumbai University</td>
+                  <td>Maharashtra</td>
+                  <td><span class="status-pill sp-planning">Under Review</span></td>
+                </tr>
+                <tr data-status="completed">
+                  <td><strong>Kavitha Rao</strong><div class="prog-loc">B.Tech Mechanical</div></td>
+                  <td>RV College, Bengaluru</td>
+                  <td>Karnataka</td>
+                  <td><span class="status-pill sp-completed">Completed</span></td>
+                </tr>
+                <tr data-status="active">
+                  <td><strong>Priya Mandal</strong><div class="prog-loc">Class 10</div></td>
+                  <td>Sharda Academy, Jaipur</td>
+                  <td>Rajasthan</td>
+                  <td><span class="status-pill sp-active">Active</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head">
+            <div class="card-title">Register New Scholar</div>
+            <div class="card-sub">Add a scholarship awardee details</div>
+          </div>
+          <div class="card-body">
+            <form class="interactive-form" id="add-scholar-form" onsubmit="event.preventDefault(); addScholar();">
+              <div class="form-group">
+                <label class="form-label">Student Name</label>
+                <input type="text" class="form-control" id="form-sch-name" required placeholder="e.g. Rahul Sharma">
+              </div>
+              <div class="form-group">
+                <label class="form-label">School / Institution</label>
+                <input type="text" class="form-control" id="form-sch-school" required placeholder="e.g. St. Xaviers High">
+              </div>
+              <div class="form-group">
+                <label class="form-label">State</label>
+                <select class="form-control" id="form-sch-state">
+                  <option value="Uttar Pradesh">Uttar Pradesh</option>
+                  <option value="Bihar">Bihar</option>
+                  <option value="Maharashtra">Maharashtra</option>
+                  <option value="Rajasthan">Rajasthan</option>
+                  <option value="Karnataka">Karnataka</option>
+                  <option value="Delhi">Delhi</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Current Status</label>
+                <select class="form-control" id="form-sch-status">
+                  <option value="active">Active</option>
+                  <option value="review">Under Review</option>
+                </select>
+              </div>
+              <button type="submit" class="form-btn" style="margin-top:8px;">+ Add Scholar Record</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div> <!-- END VIEW: SCHOLARSHIP TRACK -->
+
+    <!-- VIEW: MENTORSHIP -->
+    <div id="view-mentorship" class="dashboard-view">
+      <div class="filter-bar">
+        <div class="search-input-wrapper">
+          <span class="search-icon">🔍</span>
+          <input type="text" placeholder="Search mentors / mentees..." class="search-field" id="mentor-search">
+        </div>
+        <select class="filter-select" id="mentor-filter">
+          <option value="all">All Domains</option>
+          <option value="tech">Technology</option>
+          <option value="career">Career Guidance</option>
+          <option value="higher-ed">Higher Ed</option>
+        </select>
+      </div>
+      <div class="grid-2-1">
+        <div class="card">
+          <div class="card-head">
+            <div class="card-title">Mentorship Pairings Directory</div>
+            <div class="card-sub">Current active 1:1 guidance tracks</div>
+          </div>
+          <div class="card-body" style="display:flex; flex-direction:column; gap:12px;" id="mentor-pairs-list">
+            <div class="insight-row" data-domain="tech" style="margin-bottom:0">
+              <div class="insight-icon" style="font-size:22px;">💻</div>
+              <div class="insight-text" style="flex:1">
+                <strong>Amit Saxena (SDE, Amazon)</strong> matches with <strong>Sandeep K.</strong><br>
+                Focus: Web development roadmap & DSA prep. Started Mar 2025.
+              </div>
+              <div class="insight-badge" style="background:var(--teal-dim); color:var(--teal)">Tech</div>
+            </div>
+            <div class="insight-row" data-domain="career" style="margin-bottom:0">
+              <div class="insight-icon" style="font-size:22px;">🎯</div>
+              <div class="insight-text" style="flex:1">
+                <strong>Dr. Shalini Mehta (HR Lead)</strong> matches with <strong>Preeti V.</strong><br>
+                Focus: Corporate interview readiness & soft skills building. Started Apr 2025.
+              </div>
+              <div class="insight-badge" style="background:var(--saffron-dim); color:var(--saffron)">Career</div>
+            </div>
+            <div class="insight-row" data-domain="higher-ed" style="margin-bottom:0">
+              <div class="insight-icon" style="font-size:22px;">🎓</div>
+              <div class="insight-text" style="flex:1">
+                <strong>Prof. R. S. Negi (IIT Kanpur)</strong> matches with <strong>Harish Rawat</strong><br>
+                Focus: GATE entrance coaching & Research orientation. Started Feb 2025.
+              </div>
+              <div class="insight-badge" style="background:var(--violet-dim); color:var(--violet)">Higher Ed</div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head">
+            <div class="card-title">Request a Match</div>
+            <div class="card-sub">Pair a scholar with a industry mentor</div>
+          </div>
+          <div class="card-body">
+            <form class="interactive-form" id="mentor-match-form" onsubmit="event.preventDefault(); matchMentor();">
+              <div class="form-group">
+                <label class="form-label">Mentee Scholar Name</label>
+                <input type="text" class="form-control" id="form-men-mentee" placeholder="Name of scholarship student" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Preferred Domain</label>
+                <select class="form-control" id="form-men-domain">
+                  <option value="tech">Technology (Coding/Design)</option>
+                  <option value="career">Career Readiness (Soft skills/CV)</option>
+                  <option value="higher-ed">Higher Ed Prep (GATE/UPSC)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Key Guidance Needed</label>
+                <textarea class="form-control" id="form-men-notes" rows="3" placeholder="Explain the mentoring objectives..." style="resize:none;" required></textarea>
+              </div>
+              <button type="submit" class="form-btn">+ Create Pairing Request</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div> <!-- END VIEW: MENTORSHIP -->
+
+    <!-- VIEW: SKILL CAMPS -->
+    <div id="view-skill-camps" class="dashboard-view">
+      <div class="filter-bar">
+        <div class="search-input-wrapper">
+          <span class="search-icon">🔍</span>
+          <input type="text" placeholder="Search skill camps by city or partner..." class="search-field" id="camp-search">
+        </div>
+        <select class="filter-select" id="camp-filter">
+          <option value="all">All Types</option>
+          <option value="digital">Digital Literacy</option>
+          <option value="vocational">Vocational Skills</option>
+          <option value="health">Health & Hygiene</option>
+        </select>
+      </div>
+      <div class="grid-3" id="camps-grid">
+        <div class="card" data-type="digital">
+          <div class="card-head">
+            <div class="card-title">TechShiksha Camp - Mumbai</div>
+            <div class="status-pill sp-active">In Progress</div>
+          </div>
+          <div class="card-body">
+            <div style="font-size:12px; color:var(--text-secondary); margin-bottom:12px;">
+              <strong>Partner NGO:</strong> Rotary Club Mumbai<br>
+              <strong>Dates:</strong> Jun 10 - Jun 25, 2025<br>
+              <strong>Beneficiaries:</strong> 85 enrolled<br>
+              <strong>Instructor:</strong> Rohan Deshmukh
+            </div>
+            <div style="display:flex; align-items:center; gap:6px;">
+              <span class="prog-bar-bg" style="flex:1"><span class="prog-bar-fill" style="width:60%; background:var(--teal)"></span></span>
+              <span style="font-size:11px; color:var(--text-secondary)">60% Done</span>
+            </div>
+          </div>
+        </div>
+        <div class="card" data-type="vocational">
+          <div class="card-head">
+            <div class="card-title">Nari Shiksha Sewing - Jaipur</div>
+            <div class="status-pill sp-planning">Planning</div>
+          </div>
+          <div class="card-body">
+            <div style="font-size:12px; color:var(--text-secondary); margin-bottom:12px;">
+              <strong>Partner NGO:</strong> Rajasthan Women Welfare<br>
+              <strong>Dates:</strong> Jul 05 - Jul 25, 2025<br>
+              <strong>Beneficiaries:</strong> 40 targeted<br>
+              <strong>Instructor:</strong> Sunita Sen
+            </div>
+            <div style="display:flex; align-items:center; gap:6px;">
+              <span class="prog-bar-bg" style="flex:1"><span class="prog-bar-fill" style="width:0%; background:var(--saffron)"></span></span>
+              <span style="font-size:11px; color:var(--text-secondary)">0% Done</span>
+            </div>
+          </div>
+        </div>
+        <div class="card" data-type="health">
+          <div class="card-head">
+            <div class="card-title">Health Chetna Camp - Patna</div>
+            <div class="status-pill sp-completed">Completed</div>
+          </div>
+          <div class="card-body">
+            <div style="font-size:12px; color:var(--text-secondary); margin-bottom:12px;">
+              <strong>Partner NGO:</strong> Bihar Medical Roster<br>
+              <strong>Dates:</strong> May 15 - May 18, 2025<br>
+              <strong>Beneficiaries:</strong> 250 checked<br>
+              <strong>Lead Doctor:</strong> Dr. A. K. Verma
+            </div>
+            <div style="display:flex; align-items:center; gap:6px;">
+              <span class="prog-bar-bg" style="flex:1"><span class="prog-bar-fill" style="width:100%; background:var(--emerald)"></span></span>
+              <span style="font-size:11px; color:var(--text-secondary)">100% Done</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div> <!-- END VIEW: SKILL CAMPS -->
+
+    <!-- VIEW: VOLUNTEERS -->
+    <div id="view-volunteers" class="dashboard-view">
+      <div class="grid-2-1">
+        <div class="card">
+          <div class="card-head">
+            <div class="card-title">Volunteer Leaderboard</div>
+            <div class="card-sub">Top contributing individuals YTD</div>
+          </div>
+          <div class="vol-list" id="full-vol-list">
+            <!-- Dynamic elements load -->
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head">
+            <div class="card-title">Log Contributed Hours</div>
+            <div class="card-sub">Update active volunteer hours database</div>
+          </div>
+          <div class="card-body">
+            <form class="interactive-form" id="log-hours-form" onsubmit="event.preventDefault(); logHours();">
+              <div class="form-group">
+                <label class="form-label">Select Volunteer</label>
+                <select class="form-control" id="form-vol-name">
+                  <option value="Ananya Mehta">Ananya Mehta (Mumbai)</option>
+                  <option value="Rahul Kumar">Rahul Kumar (Delhi)</option>
+                  <option value="Priya Sharma">Priya Sharma (Pune)</option>
+                  <option value="Tarun Nair">Tarun Nair (Chennai)</option>
+                  <option value="Sneha Desai">Sneha Desai (Ahmedabad)</option>
+                  <option value="Vikram Rao">Vikram Rao (Bengaluru)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Hours to Add</label>
+                <input type="number" class="form-control" min="1" max="100" id="form-vol-hours" required placeholder="e.g. 15">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Activity Description</label>
+                <input type="text" class="form-control" id="form-vol-desc" required placeholder="e.g. Mentored 3 scholars, set up camps">
+              </div>
+              <button type="submit" class="form-btn">+ Log Contribution Hours</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div> <!-- END VIEW: VOLUNTEERS -->
+
+    <!-- VIEW: DONOR ANALYTICS -->
+    <div id="view-donor-analytics" class="dashboard-view">
+      <div class="grid-2-1">
+        <div class="card">
+          <div class="card-head">
+            <div class="card-title">Campaign Inflow Performance</div>
+            <div class="card-sub">Distribution of funds raised YTD</div>
+          </div>
+          <div class="card-body" style="display:flex; flex-direction:column; gap:16px;">
+            <div style="font-size:12px; color:var(--text-secondary);">
+              <strong>Corporate CSR Sponsorships:</strong> ₹62 Lakhs (51.6%)<br>
+              <strong>Individual Donors Portal:</strong> ₹38 Lakhs (31.7%)<br>
+              <strong>Social Media Campaign (March/May):</strong> ₹20 Lakhs (16.7%)<br>
+            </div>
+            <div class="progress-bar-stack" style="display:flex; height:18px; border-radius:9px; overflow:hidden;">
+              <div style="width: 52%; background: var(--teal);" title="CSR"></div>
+              <div style="width: 32%; background: var(--saffron);" title="Individual"></div>
+              <div style="width: 16%; background: var(--violet);" title="Campaigns"></div>
+            </div>
+            <div style="display:flex; gap:10px; font-size:10px; font-weight:700; color:var(--text-muted); justify-content:space-between;">
+              <span>● CSR (52%)</span>
+              <span>● Individual (32%)</span>
+              <span>● Social Campaigns (16%)</span>
+            </div>
+          </div>
+          <div class="card-head" style="border-top: 1px solid var(--border)">
+            <div class="card-title">Top Contributing CSR Partners</div>
+          </div>
+          <div class="card-body">
+            <table class="prog-table">
+              <thead>
+                <tr><th>Partner</th><th>Type</th><th>Contribution</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><strong>Tech Mahindra Foundation</strong></td><td>Skill Camps sponsor</td><td>₹25 Lakhs</td></tr>
+                <tr><td><strong>Tata Trusts</strong></td><td>Udaan Scholarships</td><td>₹20 Lakhs</td></tr>
+                <tr><td><strong>HDFC Bank CSR</strong></td><td>Digital Literacy Support</td><td>₹17 Lakhs</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head">
+            <div class="card-title">Simulate Donation Tier Impact</div>
+            <div class="card-sub">Plan the next fundraising campaign targets</div>
+          </div>
+          <div class="card-body" style="display:flex; flex-direction:column; gap:16px;">
+            <div class="slider-container">
+              <div class="slider-header">
+                <span>Average Donation Size</span>
+                <span id="avg-donation-val" style="color:var(--teal); font-weight:700">₹2,500</span>
+              </div>
+              <input type="range" min="500" max="10000" step="500" value="2500" class="custom-slider" id="donation-size-slider">
+            </div>
+            <div class="slider-container">
+              <div class="slider-header">
+                <span>Target Donor Count</span>
+                <span id="donor-count-val" style="color:var(--saffron); font-weight:700">1,500</span>
+              </div>
+              <input type="range" min="100" max="5000" step="100" value="1500" class="custom-slider" id="donor-count-slider">
+            </div>
+            <div class="mini-stat" style="margin:0; background:var(--ink3);">
+              <div class="ms-label">Total Simulated Inflow</div>
+              <div class="ms-val" id="simulated-raised" style="color:var(--emerald)">₹37.5 Lakhs</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div> <!-- END VIEW: DONOR ANALYTICS -->
+
+    <!-- VIEW: EXPORT & REPORTS -->
+    <div id="view-export-reports" class="dashboard-view">
+      <div class="grid-2-1">
+        <div class="card">
+          <div class="card-head">
+            <div class="card-title">Interactive Report Engine</div>
+            <div class="card-sub">Select components to export detailed metrics</div>
+          </div>
+          <div class="card-body">
+            <div class="form-group" style="margin-bottom:12px;">
+              <label class="form-label">Select Modules to Include</label>
+              <div class="metrics-grid">
+                <label class="checkbox-card">
+                  <input type="checkbox" checked id="rep-student">
+                  <span class="checkbox-label">Student Outreach</span>
+                </label>
+                <label class="checkbox-card">
+                  <input type="checkbox" checked id="rep-scholarship">
+                  <span class="checkbox-label">Scholarship Roster</span>
+                </label>
+                <label class="checkbox-card">
+                  <input type="checkbox" checked id="rep-volunteer">
+                  <span class="checkbox-label">Volunteer Roster</span>
+                </label>
+                <label class="checkbox-card">
+                  <input type="checkbox" checked id="rep-financials">
+                  <span class="checkbox-label">Financial Donations</span>
+                </label>
+              </div>
+            </div>
+            <div class="grid-2" style="margin-bottom:12px;">
+              <div class="form-group">
+                <label class="form-label">Export Format</label>
+                <select class="form-control" id="rep-format">
+                  <option value="pdf">Acrobat PDF Document (.pdf)</option>
+                  <option value="csv">Comma-separated Values (.csv)</option>
+                  <option value="xlsx">Excel Spreadsheet (.xlsx)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Data Timeframe</label>
+                <select class="form-control" id="rep-timeframe">
+                  <option value="ytd">Year-to-date (YTD)</option>
+                  <option value="q1">Q1 Only</option>
+                  <option value="q2">Q2 Only</option>
+                  <option value="all">Full Inception-to-Date</option>
+                </select>
+              </div>
+            </div>
+            <button class="form-btn" onclick="startExportProcess()">Generate & Download Report</button>
+            
+            <div class="report-progress-container" id="export-progress-container">
+              <div class="report-progress-text" id="export-progress-text">Configuring report assets...</div>
+              <div class="report-progress-bar-bg">
+                <div class="report-progress-bar-fill" id="export-progress-bar"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head">
+            <div class="card-title">Past Exported Archives</div>
+            <div class="card-sub">Recently compiled compliance summaries</div>
+          </div>
+          <div class="card-body" style="display:flex; flex-direction:column; gap:10px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 10px; background:var(--ink3); border-radius:8px; border:1px solid var(--border)">
+              <div>
+                <div style="font-size:12px; font-weight:700; color:var(--text-primary);">NayePankh_Audit_Q1_2025.pdf</div>
+                <div style="font-size:10px; color:var(--text-muted);">Compiled Apr 05, 2025 · 4.8 MB</div>
+              </div>
+              <button class="card-action" style="margin:0;" onclick="downloadMockFile('NayePankh_Audit_Q1_2025.pdf')">↓ Download</button>
+            </div>
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 10px; background:var(--ink3); border-radius:8px; border:1px solid var(--border)">
+              <div>
+                <div style="font-size:12px; font-weight:700; color:var(--text-primary);">Donor_Analytics_YTD.xlsx</div>
+                <div style="font-size:10px; color:var(--text-muted);">Compiled May 28, 2025 · 1.2 MB</div>
+              </div>
+              <button class="card-action" style="margin:0;" onclick="downloadMockFile('Donor_Analytics_YTD.xlsx')">↓ Download</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div> <!-- END VIEW: EXPORT & REPORTS -->
+
+    <!-- Global Toast Alert Container -->
+    <div id="toast-msg" class="toast-msg"></div>
+
+    <div style="height:20px"></div>
+  </div>
+</div>
+
+<script>
+// COUNTER ANIMATION
+const counters=[
+  {id:'cnt-students',target:17050,suffix:'',format:n=>n.toLocaleString('en-IN')},
+  {id:'cnt-scholarships',target:842,suffix:'',format:n=>n.toLocaleString('en-IN')},
+  {id:'cnt-volunteers',target:340,suffix:'',format:n=>n.toString()},
+  {id:'cnt-programs',target:14,suffix:'',format:n=>n.toString()},
+  {id:'cnt-placement',target:78,suffix:'%',format:n=>n+'%'},
+];
+function animateCounter(el,target,fmt,duration=1800){
+  const start=performance.now();
+  function tick(now){
+    const p=Math.min((now-start)/duration,1);
+    const ease=1-Math.pow(1-p,3);
+    el.textContent=fmt(Math.round(target*ease));
+    if(p<1)requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+window.addEventListener('load',()=>{
+  counters.forEach(c=>{
+    const el=document.getElementById(c.id);
+    if(el)animateCounter(el,c.target,c.format);
+  });
+});
+
+// PERIOD TABS
+function setPeriod(el,period){
+  document.querySelectorAll('.period-opt').forEach(o=>o.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// CHART DEFAULTS
+Chart.defaults.color='#94A3B8';
+Chart.defaults.font.family='Plus Jakarta Sans,Inter,-apple-system,sans-serif';
+Chart.defaults.font.size=11;
+Chart.defaults.plugins.legend.display=false;
+Chart.defaults.plugins.tooltip.backgroundColor='#1E293B';
+Chart.defaults.plugins.tooltip.borderColor='rgba(0,0,0,0.1)';
+Chart.defaults.plugins.tooltip.borderWidth=1;
+Chart.defaults.plugins.tooltip.titleColor='#F8FAFC';
+Chart.defaults.plugins.tooltip.bodyColor='#CBD5E1';
+Chart.defaults.plugins.tooltip.padding=10;
+Chart.defaults.plugins.tooltip.cornerRadius=8;
+
+// REACH CHART
+new Chart(document.getElementById('reachChart'),{
+  type:'bar',
+  data:{
+    labels:['Jan','Feb','Mar','Apr','May','Jun'],
+    datasets:[
+      {label:'New students',data:[2100,2500,4200,3100,3400,2200],
+        backgroundColor:ctx=>{
+          const g=ctx.chart.ctx.createLinearGradient(0,0,0,160);
+          g.addColorStop(0,'rgba(13,148,136,0.65)');
+          g.addColorStop(1,'rgba(13,148,136,0.1)');
+          return g;
+        },
+        borderColor:'#0D9488',borderWidth:1,borderRadius:5,
+        hoverBackgroundColor:'rgba(13,148,136,0.8)'
+      },
+      {label:'LY same period',data:[1700,1900,3200,2600,2800,1900],
+        backgroundColor:'rgba(0,0,0,0.04)',
+        borderColor:'rgba(0,0,0,0.08)',borderWidth:1,borderRadius:5,
+        hoverBackgroundColor:'rgba(0,0,0,0.08)'
+      }
+    ]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    scales:{
+      x:{grid:{color:'rgba(0,0,0,0.04)',drawBorder:false},ticks:{color:'#94A3B8'}},
+      y:{grid:{color:'rgba(0,0,0,0.04)',drawBorder:false},ticks:{color:'#94A3B8',callback:v=>v>=1000?(v/1000)+'k':v},beginAtZero:true}
+    },
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>' '+ctx.dataset.label+': '+ctx.parsed.y.toLocaleString('en-IN')}}}
+  }
+});
+
+// DONUT CHART
+new Chart(document.getElementById('donutChart'),{
+  type:'doughnut',
+  data:{
+    labels:['Scholarship','Skill Camps','Mentorship','Digital Literacy','Health','Other'],
+    datasets:[{
+      data:[38,24,18,11,6,3],
+      backgroundColor:['#0D9488','#F59E0B','#38BDF8','#8B5CF6','#F43F5E','rgba(255,255,255,0.1)'],
+      borderColor:'#FFFFFF',borderWidth:3,hoverOffset:6
+    }]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,cutout:'70%',
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>' '+ctx.label+': '+ctx.parsed+'%'}}}
+  }
+});
+
+// DONOR CHART
+new Chart(document.getElementById('donorChart'),{
+  type:'line',
+  data:{
+    labels:['Jan','Feb','Mar','Apr','May','Jun'],
+    datasets:[{
+      label:'Donations (₹ Lakhs)',
+      data:[12,15,22,18,24,29],
+      borderColor:'#10B981',borderWidth:2,
+      pointBackgroundColor:'#059669',pointRadius:3,pointHoverRadius:5,
+      tension:.4,
+      fill:true,
+      backgroundColor:ctx=>{
+        const g=ctx.chart.ctx.createLinearGradient(0,0,0,100);
+        g.addColorStop(0,'rgba(5,150,105,0.15)');
+        g.addColorStop(1,'rgba(5,150,105,0.01)');
+        return g;
+      }
+    }]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    scales:{
+      x:{grid:{display:false},ticks:{color:'#94A3B8'}},
+      y:{grid:{color:'rgba(0,0,0,0.04)',drawBorder:false},ticks:{color:'#94A3B8',callback:v=>'₹'+v+'L'},beginAtZero:true}
+    },
+    plugins:{legend:{display:false}}
+  }
+});
+
+// GENDER CHART
+new Chart(document.getElementById('genderChart'),{
+  type:'bar',
+  data:{
+    labels:['Female','Male','Non-binary / undisclosed'],
+    datasets:[{
+      data:[54,43,3],
+      backgroundColor:['rgba(124,58,237,0.5)','rgba(2,132,199,0.5)','rgba(0,0,0,0.06)'],
+      borderColor:['#7C3AED','#0284C7','rgba(0,0,0,0.1)'],
+      borderWidth:1,borderRadius:5
+    }]
+  },
+  options:{
+    indexAxis:'y',responsive:true,maintainAspectRatio:false,
+    scales:{
+      x:{grid:{color:'rgba(0,0,0,0.04)',drawBorder:false},ticks:{color:'#94A3B8',callback:v=>v+'%'},max:70},
+      y:{grid:{display:false},ticks:{color:'#475569'}}
+    },
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>' '+ctx.parsed.x+'%'}}}
+  }
+});
+
+// STATE CHART
+new Chart(document.getElementById('stateChart'),{
+  type:'bar',
+  data:{
+    labels:['Uttar Pradesh','Bihar','Maharashtra','Rajasthan','Karnataka'],
+    datasets:[{
+      data:[4200,3100,2800,2400,1900],
+      backgroundColor:ctx=>{
+        const colors=['rgba(13,148,136,0.6)','rgba(13,148,136,0.48)','rgba(13,148,136,0.36)','rgba(13,148,136,0.26)','rgba(13,148,136,0.18)'];
+        return colors[ctx.dataIndex]||'rgba(13,148,136,0.15)';
+      },
+      borderRadius:5
+    }]
+  },
+  options:{
+    indexAxis:'y',responsive:true,maintainAspectRatio:false,
+    scales:{
+      x:{grid:{color:'rgba(0,0,0,0.04)',drawBorder:false},ticks:{color:'#94A3B8',callback:v=>v>=1000?(v/1000)+'k':v},beginAtZero:true},
+      y:{grid:{display:false},ticks:{color:'#475569'}}
+    },
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>' '+ctx.parsed.x.toLocaleString('en-IN')+' students'}}}
+  }
+});
+
+// REPORT BUTTON
+document.getElementById('reportBtn').addEventListener('click',()=>{
+  const btn=document.getElementById('reportBtn');
+  btn.querySelector('.report-text').textContent='Generating…';
+  btn.style.pointerEvents='none';
+  setTimeout(()=>{
+    btn.querySelector('.report-text').textContent='✓ Report Ready';
+    btn.querySelector('.report-sub').textContent='Click to download';
+    setTimeout(()=>{
+      btn.querySelector('.report-text').textContent='Generate Report';
+      btn.querySelector('.report-sub').textContent='PDF · Monthly summary';
+      btn.style.pointerEvents='auto';
+    },2000);
+  },2200);
+});
+
+// TOAST NOTIFICATION HELPERS
+function showToast(text, type='success') {
+  const toast = document.getElementById('toast-msg');
+  if (!toast) return;
+  toast.innerHTML = (type === 'success' ? '✓ ' : 'ℹ ') + text;
+  toast.classList.add('show');
+  setTimeout(() => {
+    toast.classList.remove('show');
+  }, 3000);
+}
+
+// NAVIGATION VIEW SWITCHING
+const viewMap = {
+  'Dashboard': 'view-dashboard',
+  'Impact Trends': 'view-impact-trends',
+  'Beneficiary Map': 'view-beneficiary-map',
+  'Scholarship Track': 'view-scholarship-track',
+  'Mentorship': 'view-mentorship',
+  'Skill Camps': 'view-skill-camps',
+  'Volunteers': 'view-volunteers',
+  'Donor Analytics': 'view-donor-analytics',
+  'Export & Reports': 'view-export-reports'
+};
+
+function switchView(label) {
+  const targetId = viewMap[label];
+  if (!targetId) return;
+  document.querySelectorAll('.dashboard-view').forEach(v => v.classList.remove('active-view'));
+  const targetView = document.getElementById(targetId);
+  if (targetView) {
+    targetView.classList.add('active-view');
+  }
+}
+
+// FUNCTIONAL NAVIGATION
+document.querySelectorAll('.nav-item').forEach(item=>{
+  item.addEventListener('click',function(){
+    document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
+    this.classList.add('active');
+    const label=this.querySelector('.nav-lbl').textContent;
+    document.querySelector('.page-hed-title').textContent=label;
+    const subs={'Dashboard':'Year-to-date · Jan–Jun 2025 · All Programs · India','Impact Trends':'Quarterly growth analysis · All metrics','Beneficiary Map':'Live geo-distribution · 12 states · 47 districts','Scholarship Track':'Merit + income-based · 842 active scholarships','Mentorship':'1:1 pairing · 320 active mentors · 680 mentees','Skill Camps':'Digital & vocational · 24 camps planned','Volunteers':'340 active volunteers · 8,340 hours logged YTD','Donor Analytics':'₹1.2 Cr raised · 2,847 unique donors','Export & Reports':'Generate PDF / CSV reports for all modules'};
+    document.querySelector('.page-hed-sub').textContent=subs[label]||'NayePankh Foundation · Impact Analytics';
+    switchView(label);
+  });
+});
+
+// 1. IMPACT FORECASTER (IMPACT TRENDS)
+const fundingSlider = document.getElementById('funding-slider');
+const fundingVal = document.getElementById('funding-val');
+const forecastStudents = document.getElementById('forecast-students');
+const forecastCamps = document.getElementById('forecast-camps');
+
+if (fundingSlider) {
+  fundingSlider.addEventListener('input', function() {
+    const val = parseInt(this.value);
+    fundingVal.textContent = '₹' + val + ' Lakhs';
+    forecastStudents.textContent = (val * 150).toLocaleString('en-IN');
+    forecastCamps.textContent = Math.round(val * 0.3);
+  });
+}
+
+// 2. BENEFICIARY MAP INTERACTIVE STATE SELECTOR
+function selectState(btn, stateName, outreach, scholars, funds, coordinator) {
+  document.querySelectorAll('.state-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  
+  document.getElementById('region-subtitle').textContent = 'Currently displaying: ' + stateName;
+  document.getElementById('state-outreach').textContent = outreach + ' Students';
+  document.getElementById('state-scholars').textContent = scholars + ' Awardees';
+  document.getElementById('state-funds').textContent = funds;
+  document.getElementById('state-coordinator').textContent = coordinator;
+}
+
+// 3. SCHOLARSHIP SEARCH & FILTERING
+const scholarSearch = document.getElementById('scholar-search');
+const scholarFilter = document.getElementById('scholar-filter');
+const scholarTable = document.getElementById('scholar-table');
+
+function filterScholars() {
+  const query = scholarSearch.value.toLowerCase();
+  const statusFilter = scholarFilter.value;
+  const rows = scholarTable.querySelectorAll('tbody tr');
+  
+  rows.forEach(row => {
+    const name = row.cells[0].textContent.toLowerCase();
+    const inst = row.cells[1].textContent.toLowerCase();
+    const state = row.cells[2].textContent.toLowerCase();
+    const status = row.getAttribute('data-status');
+    
+    const matchesQuery = name.includes(query) || inst.includes(query) || state.includes(query);
+    const matchesStatus = statusFilter === 'all' || status === statusFilter;
+    
+    if (matchesQuery && matchesStatus) {
+      row.style.display = '';
+    } else {
+      row.style.display = 'none';
+    }
+  });
+}
+
+if (scholarSearch) scholarSearch.addEventListener('input', filterScholars);
+if (scholarFilter) scholarFilter.addEventListener('change', filterScholars);
+
+// 4. ADD SCHOLAR FORM ACTION
+function addScholar() {
+  const nameInput = document.getElementById('form-sch-name');
+  const schoolInput = document.getElementById('form-sch-school');
+  const name = nameInput.value.trim();
+  const school = schoolInput.value.trim();
+  const state = document.getElementById('form-sch-state').value;
+  const status = document.getElementById('form-sch-status').value;
+  
+  if (!name || !school) return;
+  
+  // Create row
+  const tr = document.createElement('tr');
+  tr.setAttribute('data-status', status);
+  
+  const statusText = status === 'active' ? 'Active' : 'Under Review';
+  const statusClass = status === 'active' ? 'sp-active' : 'sp-planning';
+  
+  tr.innerHTML = `
+    <td><strong>${name}</strong><div class="prog-loc">Class 11</div></td>
+    <td>${school}</td>
+    <td>${state}</td>
+    <td><span class="status-pill ${statusClass}">${statusText}</span></td>
+  `;
+  
+  scholarTable.querySelector('tbody').prepend(tr);
+  
+  // Increment counter in DOM
+  const schCountEl = document.getElementById('cnt-scholarships');
+  if (schCountEl) {
+    const currentVal = parseInt(schCountEl.textContent.replace(/,/g, '')) || 842;
+    schCountEl.textContent = (currentVal + 1).toLocaleString('en-IN');
+  }
+  
+  showToast(`Scholar record for "${name}" registered successfully.`);
+  document.getElementById('add-scholar-form').reset();
+}
+
+// 5. MENTORSHIP SEARCH & FILTERING
+const mentorSearch = document.getElementById('mentor-search');
+const mentorFilter = document.getElementById('mentor-filter');
+const mentorList = document.getElementById('mentor-pairs-list');
+
+function filterMentors() {
+  const query = mentorSearch.value.toLowerCase();
+  const domainFilter = mentorFilter.value;
+  const items = mentorList.querySelectorAll('.insight-row');
+  
+  items.forEach(item => {
+    const text = item.textContent.toLowerCase();
+    const domain = item.getAttribute('data-domain');
+    
+    const matchesQuery = text.includes(query);
+    const matchesDomain = domainFilter === 'all' || domain === domainFilter;
+    
+    if (matchesQuery && matchesDomain) {
+      item.style.display = 'flex';
+    } else {
+      item.style.display = 'none';
+    }
+  });
+}
+
+if (mentorSearch) mentorSearch.addEventListener('input', filterMentors);
+if (mentorFilter) mentorFilter.addEventListener('change', filterMentors);
+
+// 6. REQUEST MATCH FORM ACTION
+function matchMentor() {
+  const mentee = document.getElementById('form-men-mentee').value.trim();
+  const domain = document.getElementById('form-men-domain').value;
+  const notes = document.getElementById('form-men-notes').value.trim();
+  
+  if (!mentee || !notes) return;
+  
+  const entry = document.createElement('div');
+  entry.className = 'insight-row';
+  entry.setAttribute('data-domain', domain);
+  entry.style.marginBottom = '0';
+  
+  const icons = { 'tech': '💻', 'career': '🎯', 'higher-ed': '🎓' };
+  const domainLabels = { 'tech': 'Tech', 'career': 'Career', 'higher-ed': 'Higher Ed' };
+  const bgClasses = { 'tech': 'var(--teal-dim)', 'career': 'var(--saffron-dim)', 'higher-ed': 'var(--violet-dim)' };
+  const colors = { 'tech': 'var(--teal)', 'career': 'var(--saffron)', 'higher-ed': 'var(--violet)' };
+  
+  entry.innerHTML = `
+    <div class="insight-icon" style="font-size:22px;">${icons[domain] || '👥'}</div>
+    <div class="insight-text" style="flex:1">
+      <strong>Pending Coordinator Match</strong> matches with <strong>${mentee}</strong><br>
+      Guidance: ${notes}
+    </div>
+    <div class="insight-badge" style="background:${bgClasses[domain]}; color:${colors[domain]}">${domainLabels[domain]}</div>
+  `;
+  
+  mentorList.prepend(entry);
+  showToast(`Mentorship match request logged for "${mentee}".`);
+  document.getElementById('mentor-match-form').reset();
+}
+
+// 7. SKILL CAMPS SEARCH & FILTERING
+const campSearch = document.getElementById('camp-search');
+const campFilter = document.getElementById('camp-filter');
+const campsGrid = document.getElementById('camps-grid');
+
+function filterCamps() {
+  const query = campSearch.value.toLowerCase();
+  const typeFilter = campFilter.value;
+  const cards = campsGrid.querySelectorAll('.card');
+  
+  cards.forEach(card => {
+    const title = card.querySelector('.card-title').textContent.toLowerCase();
+    const bodyText = card.querySelector('.card-body').textContent.toLowerCase();
+    const type = card.getAttribute('data-type');
+    
+    const matchesQuery = title.includes(query) || bodyText.includes(query);
+    const matchesType = typeFilter === 'all' || type === typeFilter;
+    
+    if (matchesQuery && matchesType) {
+      card.style.display = '';
+    } else {
+      card.style.display = 'none';
+    }
+  });
+}
+
+if (campSearch) campSearch.addEventListener('input', filterCamps);
+if (campFilter) campFilter.addEventListener('change', filterCamps);
+
+// 8. VOLUNTEERS HOUR LOGGING & LEADERBOARD POPULATION
+function syncVolunteersList() {
+  const dashboardVolList = document.querySelector('#view-dashboard .vol-list');
+  const fullVolList = document.getElementById('full-vol-list');
+  if (dashboardVolList && fullVolList) {
+    fullVolList.innerHTML = dashboardVolList.innerHTML;
+  }
+}
+
+function logHours() {
+  const volName = document.getElementById('form-vol-name').value;
+  const hours = parseInt(document.getElementById('form-vol-hours').value);
+  const desc = document.getElementById('form-vol-desc').value.trim();
+  
+  if (!hours || !desc) return;
+  
+  const lists = [document.querySelector('#view-dashboard .vol-list'), document.getElementById('full-vol-list')];
+  lists.forEach(list => {
+    if (!list) return;
+    const items = list.querySelectorAll('.vol-item');
+    items.forEach(item => {
+      const name = item.querySelector('.vol-name').textContent;
+      if (name === volName) {
+        const hoursEl = item.querySelector('.vol-hours');
+        const currentHours = parseInt(hoursEl.textContent) || 0;
+        hoursEl.textContent = (currentHours + hours) + ' hr';
+        item.style.backgroundColor = 'var(--teal-dim)';
+        setTimeout(() => { item.style.backgroundColor = ''; }, 1000);
+      }
+    });
+  });
+  
+  const volCountEl = document.getElementById('cnt-volunteers');
+  if (volCountEl) {
+    const currentVal = parseInt(volCountEl.textContent.replace(/,/g, '')) || 340;
+    volCountEl.textContent = (currentVal + 1).toString();
+  }
+  
+  showToast(`Logged ${hours} hours for ${volName} successfully.`);
+  document.getElementById('log-hours-form').reset();
+}
+
+// 9. DONOR SIMULATION
+const donationSizeSlider = document.getElementById('donation-size-slider');
+const donorCountSlider = document.getElementById('donor-count-slider');
+const avgDonationVal = document.getElementById('avg-donation-val');
+const donorCountVal = document.getElementById('donor-count-val');
+const simulatedRaised = document.getElementById('simulated-raised');
+
+function updateSimulation() {
+  const size = parseInt(donationSizeSlider.value);
+  const count = parseInt(donorCountSlider.value);
+  avgDonationVal.textContent = '₹' + size.toLocaleString('en-IN');
+  donorCountVal.textContent = count.toLocaleString('en-IN');
+  
+  const total = size * count;
+  let displayTotal = '';
+  if (total >= 10000000) {
+    displayTotal = '₹' + (total / 10000000).toFixed(2) + ' Cr';
+  } else if (total >= 100000) {
+    displayTotal = '₹' + (total / 100000).toFixed(2) + ' Lakhs';
+  } else {
+    displayTotal = '₹' + total.toLocaleString('en-IN');
+  }
+  simulatedRaised.textContent = displayTotal;
+}
+
+if (donationSizeSlider) {
+  donationSizeSlider.addEventListener('input', updateSimulation);
+  donorCountSlider.addEventListener('input', updateSimulation);
+}
+
+// 10. REPORT ENGINE EXPORT PROCESS
+function startExportProcess() {
+  const container = document.getElementById('export-progress-container');
+  const textEl = document.getElementById('export-progress-text');
+  const barEl = document.getElementById('export-progress-bar');
+  
+  container.style.display = 'block';
+  barEl.style.width = '0%';
+  textEl.textContent = 'Configuring export assets...';
+  
+  const format = document.getElementById('rep-format').value.toUpperCase();
+  
+  let progress = 0;
+  const interval = setInterval(() => {
+    progress += Math.floor(Math.random() * 15) + 5;
+    if (progress >= 100) {
+      progress = 100;
+      clearInterval(interval);
+      barEl.style.width = '100%';
+      textEl.textContent = `✓ Export Completed. Downloading ${format} document...`;
+      
+      setTimeout(() => {
+        downloadMockFile(`NayePankh_Report_YTD.${format.toLowerCase()}`);
+        container.style.display = 'none';
+      }, 1200);
+    } else {
+      barEl.style.width = progress + '%';
+      if (progress > 30 && progress < 60) {
+        textEl.textContent = 'Compiling data tables & charts...';
+      } else if (progress >= 60 && progress < 90) {
+        textEl.textContent = 'Formatting and signing report bundle...';
+      }
+    }
+  }, 150);
+}
+
+function downloadMockFile(filename) {
+  const data = "NayePankh Foundation - Mock Report Content";
+  const blob = new Blob([data], { type: 'text/plain' });
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.style.display = 'none';
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  window.URL.revokeObjectURL(url);
+  showToast(`Downloaded: ${filename}`);
+}
+
+window.addEventListener('load', () => {
+  syncVolunteersList();
+});
+
+// TOPBAR BUTTON HANDLERS
+document.querySelector('.tb-btn:not(.primary)').addEventListener('click', function() {
+  // Switch to Export view
+  const navItems = document.querySelectorAll('.nav-item');
+  navItems.forEach(item => {
+    if (item.querySelector('.nav-lbl').textContent === 'Export & Reports') {
+      item.click();
+    }
+  });
+});
+
+document.querySelector('.tb-btn.primary').addEventListener('click', function() {
+  // Switch to Scholarship Track view and focus input
+  const navItems = document.querySelectorAll('.nav-item');
+  navItems.forEach(item => {
+    if (item.querySelector('.nav-lbl').textContent === 'Scholarship Track') {
+      item.click();
+      setTimeout(() => {
+        const inp = document.getElementById('form-sch-name');
+        if (inp) inp.focus();
+      }, 400);
+    }
+  });
+});
+
+// CARD ACTION BUTTONS
+document.querySelectorAll('.card-action').forEach(btn=>{
+  btn.addEventListener('click',function(){
+    const orig=this.textContent;
+    this.textContent='Loading…';
+    this.style.pointerEvents='none';
+    setTimeout(()=>{
+      this.textContent=orig;
+      this.style.pointerEvents='auto';
+    },1200);
+  });
+});
+</script>
+</body>
+</html>
